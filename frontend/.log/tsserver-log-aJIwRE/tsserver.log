@@ -1,0 +1,114 @@
+Info 0    [19:30:53.813] Starting TS Server
+Info 1    [19:30:53.814] Version: 5.2.2
+Info 2    [19:30:53.814] Arguments: /opt/nvm/versions/node/v20.5.1/bin/node /disk/frontend/node_modules/typescript/lib/tsserver.js --serverMode partialSemantic --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --cancellationPipeName /tmp/f40bc658290728345857cdf1e0fac87c/tscancellation* --logVerbosity verbose --logFile /disk/frontend/.log/tsserver-log-aJIwRE/tsserver.log --locale en --validateDefaultNpmLocation --useNodeIpc
+Info 3    [19:30:53.814] Platform: linux NodeVersion: v20.5.1 CaseSensitive: true
+Info 4    [19:30:53.814] ServerMode: 1 hasUnknownServerMode: undefined
+Info 5    [19:30:53.829] request:
+    {
+      "seq": 0,
+      "type": "request",
+      "command": "configure",
+      "arguments": {
+        "hostInfo": "Databutton",
+        "formatOptions": {
+          "newLineCharacter": "\n"
+        },
+        "preferences": {
+          "allowIncompleteCompletions": true,
+          "allowRenameOfImportPath": true,
+          "allowTextChangesInNewFiles": true,
+          "disableLineTextInReferences": true,
+          "disableSuggestions": false,
+          "displayPartsForJSDoc": true,
+          "excludeLibrarySymbolsInNavTo": true,
+          "generateReturnInDocTemplate": true,
+          "importModuleSpecifierEnding": "auto",
+          "importModuleSpecifierPreference": "shortest",
+          "includeAutomaticOptionalChainCompletions": true,
+          "includeCompletionsForImportStatements": true,
+          "includeCompletionsForModuleExports": true,
+          "includeCompletionsWithClassMemberSnippets": true,
+          "includeCompletionsWithInsertText": true,
+          "includeCompletionsWithObjectLiteralMethodSnippets": true,
+          "includeCompletionsWithSnippetText": true,
+          "includeInlayEnumMemberValueHints": false,
+          "includeInlayFunctionLikeReturnTypeHints": false,
+          "includeInlayFunctionParameterTypeHints": false,
+          "includeInlayParameterNameHints": "none",
+          "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+          "includeInlayPropertyDeclarationTypeHints": false,
+          "includeInlayVariableTypeHints": false,
+          "includeInlayVariableTypeHintsWhenTypeMatchesName": false,
+          "includePackageJsonAutoImports": "auto",
+          "interactiveInlayHints": true,
+          "jsxAttributeCompletionStyle": "auto",
+          "lazyConfiguredProjectsFromExternalProject": false,
+          "organizeImportsAccentCollation": true,
+          "organizeImportsCaseFirst": false,
+          "organizeImportsCollation": "ordinal",
+          "organizeImportsCollationLocale": "en",
+          "organizeImportsIgnoreCase": "auto",
+          "organizeImportsNumericCollation": false,
+          "providePrefixAndSuffixTextForRename": true,
+          "provideRefactorNotApplicableReason": true,
+          "quotePreference": "auto"
+        }
+      }
+    }
+Info 6    [19:30:53.829] Host information Databutton
+Info 7    [19:30:53.829] Format host information updated
+Info 8    [19:30:53.829] response:
+    {"seq":0,"type":"response","command":"configure","request_seq":0,"success":true}
+Perf 9    [19:30:53.835] 0::configure: async elapsed time (in milliseconds) 6.3995
+Info 10   [19:30:53.835] request:
+    {
+      "seq": 1,
+      "type": "request",
+      "command": "open",
+      "arguments": {
+        "file": "/disk/frontend/src/components/CodeEditor.tsx",
+        "fileContent": "import { Editor } from '@monaco-editor/react';\nimport { useTheme } from '@/hooks/use-theme';\nimport { Card } from '@/components/ui/card';\nimport { Loader2 } from 'lucide-react';\n\ninterface Props {\n  code: string;\n  language: string;\n  readOnly?: boolean;\n  onChange?: (value: string | undefined) => void;\n}\n\n/**\n * Detect language from file path\n */\nexport const detectLanguage = (filePath: string): string => {\n  const ext = filePath.split('.').pop()?.toLowerCase();\n  \n  const languageMap: Record<string, string> = {\n    'py': 'python',\n    'js': 'javascript',\n    'jsx': 'javascript',\n    'ts': 'typescript',\n    'tsx': 'typescript',\n    'html': 'html',\n    'css': 'css',\n    'scss': 'scss',\n    'json': 'json',\n    'md': 'markdown',\n    'yaml': 'yaml',\n    'yml': 'yaml',\n    'sql': 'sql',\n    'sh': 'shell',\n    'bash': 'shell',\n  };\n  \n  return languageMap[ext || ''] || 'plaintext';\n};\n\n/**\n * Monaco code editor component\n * Supports syntax highlighting, themes, and optional editing\n */\nexport const CodeEditor = ({ code, language, readOnly = true, onChange }: Props) => {\n  const { theme } = useTheme();\n  \n  // Map our theme to Monaco theme\n  const monacoTheme = theme === 'light' ? 'light' : 'vs-dark';\n  \n  return (\n    <Card className=\"h-full border-border overflow-hidden\">\n      <Editor\n        height=\"100%\"\n        language={language}\n        value={code}\n        theme={monacoTheme}\n        onChange={onChange}\n        options={{\n          readOnly,\n          minimap: { enabled: true },\n          fontSize: 14,\n          lineNumbers: 'on',\n          roundedSelection: false,\n          scrollBeyondLastLine: false,\n          automaticLayout: true,\n          tabSize: 2,\n          wordWrap: 'off',\n          folding: true,\n          renderLineHighlight: 'all',\n          cursorBlinking: 'smooth',\n          smoothScrolling: true,\n          padding: { top: 16, bottom: 16 },\n        }}\n        loading={\n          <div className=\"h-full flex items-center justify-center bg-background\">\n            <Loader2 className=\"w-8 h-8 animate-spin text-muted-foreground\" />\n          </div>\n        }\n      />\n    </Card>\n  );\n};\n",
+        "scriptKindName": "TSX",
+        "projectRootPath": "/disk/frontend"
+      }
+    }
+Info 11   [19:30:53.839] Starting updateGraphWorker: Project: /dev/null/inferredProject1*
+Info 12   [19:30:54.885] Finishing updateGraphWorker: Project: /dev/null/inferredProject1* Version: 1 structureChanged: true structureIsReused:: Not Elapsed: 1045.811159003526ms
+Info 13   [19:30:54.885] Project '/dev/null/inferredProject1*' (Inferred)
+Info 14   [19:30:54.886] 	Files (8)
+	/disk/frontend/node_modules/typescript/lib/lib.d.ts
+	/disk/frontend/node_modules/typescript/lib/lib.es5.d.ts
+	/disk/frontend/node_modules/typescript/lib/lib.dom.d.ts
+	/disk/frontend/node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+	/disk/frontend/node_modules/typescript/lib/lib.scripthost.d.ts
+	/disk/frontend/node_modules/typescript/lib/lib.decorators.d.ts
+	/disk/frontend/node_modules/typescript/lib/lib.decorators.legacy.d.ts
+	/disk/frontend/src/components/CodeEditor.tsx
+
+
+	node_modules/typescript/lib/lib.d.ts
+	  Default library for target 'es5'
+	node_modules/typescript/lib/lib.es5.d.ts
+	  Library referenced via 'es5' from file 'node_modules/typescript/lib/lib.d.ts'
+	node_modules/typescript/lib/lib.dom.d.ts
+	  Library referenced via 'dom' from file 'node_modules/typescript/lib/lib.d.ts'
+	node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+	  Library referenced via 'webworker.importscripts' from file 'node_modules/typescript/lib/lib.d.ts'
+	node_modules/typescript/lib/lib.scripthost.d.ts
+	  Library referenced via 'scripthost' from file 'node_modules/typescript/lib/lib.d.ts'
+	node_modules/typescript/lib/lib.decorators.d.ts
+	  Library referenced via 'decorators' from file 'node_modules/typescript/lib/lib.es5.d.ts'
+	node_modules/typescript/lib/lib.decorators.legacy.d.ts
+	  Library referenced via 'decorators.legacy' from file 'node_modules/typescript/lib/lib.es5.d.ts'
+	src/components/CodeEditor.tsx
+	  Root file specified for compilation
+
+Info 15   [19:30:54.886] -----------------------------------------------
+Info 16   [19:30:54.886] Project '/dev/null/inferredProject1*' (Inferred)
+Info 16   [19:30:54.886] 	Files (8)
+
+Info 16   [19:30:54.886] -----------------------------------------------
+Info 16   [19:30:54.886] Open files: 
+Info 16   [19:30:54.887] 	FileName: /disk/frontend/src/components/CodeEditor.tsx ProjectRootPath: /disk/frontend
+Info 16   [19:30:54.887] 		Projects: /dev/null/inferredProject1*
+Perf 16   [19:30:54.887] 1::open: async elapsed time (in milliseconds) 1051.3979

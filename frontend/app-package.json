@@ -1,0 +1,14 @@
+{
+  "version": null,
+  "app": {
+    "dependencies": {
+      "prismjs": "*",
+      "react-syntax-highlighter": "*",
+      "@types/prismjs": "*",
+      "react-markdown": "*",
+      "@types/react-syntax-highlighter": "*"
+    },
+    "devDependencies": {}
+  },
+  "base": null
+}

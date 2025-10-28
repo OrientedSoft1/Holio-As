@@ -1,0 +1,536 @@
+Info 0    [19:33:38.847] Starting TS Server
+Info 1    [19:33:38.847] Version: 5.2.2
+Info 2    [19:33:38.847] Arguments: /opt/nvm/versions/node/v20.5.1/bin/node /disk/frontend/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --cancellationPipeName /tmp/71fb6f5ce5f29d153d5f9b971c056e6c/tscancellation* --logVerbosity verbose --logFile /disk/frontend/.log/tsserver-log-lnvQHJ/tsserver.log --locale en --validateDefaultNpmLocation --useNodeIpc
+Info 3    [19:33:38.847] Platform: linux NodeVersion: v20.5.1 CaseSensitive: true
+Info 4    [19:33:38.847] ServerMode: undefined hasUnknownServerMode: undefined
+Info 5    [19:33:38.853] Binding...
+Info 6    [19:33:38.859] request:
+    {
+      "seq": 0,
+      "type": "request",
+      "command": "configure",
+      "arguments": {
+        "hostInfo": "Databutton",
+        "formatOptions": {
+          "newLineCharacter": "\n"
+        },
+        "preferences": {
+          "allowIncompleteCompletions": true,
+          "allowRenameOfImportPath": true,
+          "allowTextChangesInNewFiles": true,
+          "disableLineTextInReferences": true,
+          "disableSuggestions": false,
+          "displayPartsForJSDoc": true,
+          "excludeLibrarySymbolsInNavTo": true,
+          "generateReturnInDocTemplate": true,
+          "importModuleSpecifierEnding": "auto",
+          "importModuleSpecifierPreference": "shortest",
+          "includeAutomaticOptionalChainCompletions": true,
+          "includeCompletionsForImportStatements": true,
+          "includeCompletionsForModuleExports": true,
+          "includeCompletionsWithClassMemberSnippets": true,
+          "includeCompletionsWithInsertText": true,
+          "includeCompletionsWithObjectLiteralMethodSnippets": true,
+          "includeCompletionsWithSnippetText": true,
+          "includeInlayEnumMemberValueHints": false,
+          "includeInlayFunctionLikeReturnTypeHints": false,
+          "includeInlayFunctionParameterTypeHints": false,
+          "includeInlayParameterNameHints": "none",
+          "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+          "includeInlayPropertyDeclarationTypeHints": false,
+          "includeInlayVariableTypeHints": false,
+          "includeInlayVariableTypeHintsWhenTypeMatchesName": false,
+          "includePackageJsonAutoImports": "auto",
+          "interactiveInlayHints": true,
+          "jsxAttributeCompletionStyle": "auto",
+          "lazyConfiguredProjectsFromExternalProject": false,
+          "organizeImportsAccentCollation": true,
+          "organizeImportsCaseFirst": false,
+          "organizeImportsCollation": "ordinal",
+          "organizeImportsCollationLocale": "en",
+          "organizeImportsIgnoreCase": "auto",
+          "organizeImportsNumericCollation": false,
+          "providePrefixAndSuffixTextForRename": true,
+          "provideRefactorNotApplicableReason": true,
+          "quotePreference": "auto"
+        }
+      }
+    }
+Info 7    [19:33:38.859] Host information Databutton
+Info 8    [19:33:38.863] Format host information updated
+Info 9    [19:33:38.864] response:
+    {"seq":0,"type":"response","command":"configure","request_seq":0,"success":true}
+Perf 10   [19:33:38.864] 0::configure: async elapsed time (in milliseconds) 5.1862
+Info 11   [19:33:38.864] request:
+    {
+      "seq": 1,
+      "type": "request",
+      "command": "compilerOptionsForInferredProjects",
+      "arguments": {
+        "options": {
+          "module": "ESNext",
+          "moduleResolution": "Node",
+          "target": "ES2020",
+          "jsx": "React",
+          "allowImportingTsExtensions": true,
+          "strictNullChecks": true,
+          "strictFunctionTypes": true,
+          "sourceMap": true,
+          "allowJs": true,
+          "allowNonTsExtensions": true,
+          "allowSyntheticDefaultImports": true,
+          "resolveJsonModule": true
+        }
+      }
+    }
+Perf 12   [19:33:38.864] 1::compilerOptionsForInferredProjects: elapsed time (in milliseconds) 0.3391
+Info 13   [19:33:38.865] response:
+    {"seq":0,"type":"response","command":"compilerOptionsForInferredProjects","request_seq":1,"success":true,"body":true}
+Info 14   [19:33:38.865] event:
+    {"seq":0,"type":"event","event":"typingsInstallerPid","body":{"pid":27392}}
+Info 15   [19:33:52.805] request:
+    {
+      "seq": 2,
+      "type": "request",
+      "command": "open",
+      "arguments": {
+        "file": "/disk/frontend/src/components/CodeView.tsx",
+        "fileContent": "import { useState, useEffect } from 'react';\nimport { apiClient } from 'app';\nimport { toast } from 'sonner';\nimport { FileTree } from 'components/FileTree';\nimport { CodeEditor, detectLanguage } from 'components/CodeEditor';\nimport { Loader2, FileCode } from 'lucide-react';\nimport type { ProjectFile } from 'utils/workspaceStore';\n\ninterface Props {\n  projectId: string;\n}\n\n/**\n * Code view component with file tree and Monaco editor\n * Displays project files in a tree structure and allows viewing code\n */\nexport const CodeView = ({ projectId }: Props) => {\n  const [files, setFiles] = useState<ProjectFile[]>([]);\n  const [selectedFileId, setSelectedFileId] = useState<string | null>(null);\n  const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);\n  const [loading, setLoading] = useState(true);\n  const [loadingFile, setLoadingFile] = useState(false);\n\n  // Load all files on mount\n  useEffect(() => {\n    loadFiles();\n  }, [projectId]);\n\n  const loadFiles = async () => {\n    try {\n      setLoading(true);\n      const response = await apiClient.read_files({ projectId });\n      const data = await response.json();\n      \n      if (data.success && data.files) {\n        setFiles(data.files);\n        \n        // Auto-select first file if none selected\n        if (data.files.length > 0 && !selectedFileId) {\n          handleFileClick(data.files[0].id);\n        }\n      }\n    } catch (err) {\n      console.error('Failed to load files:', err);\n      toast.error('Failed to load files');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const handleFileClick = async (fileId: string) => {\n    try {\n      setLoadingFile(true);\n      setSelectedFileId(fileId);\n      \n      // Find file in current files list\n      const file = files.find(f => f.id === fileId);\n      if (file) {\n        setSelectedFile(file);\n      }\n    } catch (err) {\n      console.error('Failed to load file:', err);\n      toast.error('Failed to load file');\n    } finally {\n      setLoadingFile(false);\n    }\n  };\n\n  if (loading) {\n    return (\n      <div className=\"h-full flex items-center justify-center\">\n        <div className=\"text-center space-y-4\">\n          <Loader2 className=\"w-8 h-8 animate-spin mx-auto text-muted-foreground\" />\n          <p className=\"text-sm text-muted-foreground\">Loading files...</p>\n        </div>\n      </div>\n    );\n  }\n\n  if (files.length === 0) {\n    return (\n      <div className=\"h-full flex items-center justify-center\">\n        <div className=\"text-center space-y-4\">\n          <div className=\"w-16 h-16 mx-auto bg-muted rounded-lg flex items-center justify-center\">\n            <FileCode className=\"w-8 h-8 text-muted-foreground\" />\n          </div>\n          <div>\n            <h3 className=\"text-lg font-medium text-foreground mb-2\">No Code Yet</h3>\n            <p className=\"text-sm text-muted-foreground\">\n              Chat with AI to generate code for your project\n            </p>\n          </div>\n        </div>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"h-full flex gap-4\">\n      {/* File Tree - Left Sidebar */}\n      <div className=\"w-64 flex-shrink-0\">\n        <FileTree\n          files={files}\n          selectedFileId={selectedFileId}\n          onFileClick={handleFileClick}\n        />\n      </div>\n\n      {/* Code Editor - Main Area */}\n      <div className=\"flex-1 flex flex-col\">\n        {selectedFile ? (\n          <>\n            {/* File Header */}\n            <div className=\"px-4 py-2 bg-card border border-border rounded-t-md flex items-center justify-between\">\n              <span className=\"text-sm font-mono text-muted-foreground\">\n                {selectedFile.file_path}\n              </span>\n              <span className=\"text-xs text-muted-foreground\">\n                {selectedFile.language || detectLanguage(selectedFile.file_path)}\n              </span>\n            </div>\n\n            {/* Editor */}\n            <div className=\"flex-1 rounded-b-md overflow-hidden\">\n              {loadingFile ? (\n                <div className=\"h-full flex items-center justify-center bg-card\">\n                  <Loader2 className=\"w-8 h-8 animate-spin text-muted-foreground\" />\n                </div>\n              ) : (\n                <CodeEditor\n                  code={selectedFile.file_content}\n                  language={selectedFile.language || detectLanguage(selectedFile.file_path)}\n                  readOnly={true}\n                />\n              )}\n            </div>\n          </>\n        ) : (\n          <div className=\"h-full flex items-center justify-center bg-card border border-border rounded-md\">\n            <p className=\"text-sm text-muted-foreground\">\n              Select a file to view its code\n            </p>\n          </div>\n        )}\n      </div>\n    </div>\n  );\n};\n",
+        "scriptKindName": "TSX",
+        "projectRootPath": "/disk/frontend"
+      }
+    }
+Info 16   [19:33:52.806] Search path: /disk/frontend/src/components
+Info 17   [19:33:52.807] For info: /disk/frontend/src/components/CodeView.tsx :: Config file name: /disk/frontend/tsconfig.json
+Info 18   [19:33:52.807] Creating configuration project /disk/frontend/tsconfig.json
+Info 19   [19:33:52.809] FileWatcher:: Added:: WatchInfo: /disk/frontend/tsconfig.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: Config file
+Info 20   [19:33:52.810] event:
+    {"seq":0,"type":"event","event":"projectLoadingStart","body":{"projectName":"/disk/frontend/tsconfig.json","reason":"Creating possible configured project for /disk/frontend/src/components/CodeView.tsx to open"}}
+Info 21   [19:33:52.850] Config: /disk/frontend/tsconfig.json : {
+ "rootNames": [
+  "/disk/frontend/src/AppWrapper.tsx",
+  "/disk/frontend/src/constants.ts",
+  "/disk/frontend/src/main.tsx",
+  "/disk/frontend/src/router.tsx",
+  "/disk/frontend/src/user-routes.tsx",
+  "/disk/frontend/src/vite-env.d.ts",
+  "/disk/frontend/src/apiclient/index.ts",
+  "/disk/frontend/src/app/index.ts",
+  "/disk/frontend/src/app/auth/LoginRedirect.tsx",
+  "/disk/frontend/src/app/auth/StackHandlerRoutes.tsx",
+  "/disk/frontend/src/app/auth/UserGuard.tsx",
+  "/disk/frontend/src/app/auth/auth.ts",
+  "/disk/frontend/src/app/auth/config.ts",
+  "/disk/frontend/src/app/auth/index.ts",
+  "/disk/frontend/src/app/auth/stack.ts",
+  "/disk/frontend/src/app/auth/utils.ts",
+  "/disk/frontend/src/brain/index.ts",
+  "/disk/frontend/src/components/AppProvider.tsx",
+  "/disk/frontend/src/components/ChatHistory.tsx",
+  "/disk/frontend/src/components/ChatInput.tsx",
+  "/disk/frontend/src/components/ChatMessage.tsx",
+  "/disk/frontend/src/components/ChatPanel.tsx",
+  "/disk/frontend/src/components/CodeEditor.tsx",
+  "/disk/frontend/src/components/CodeHighlight.tsx",
+  "/disk/frontend/src/components/CodePreview.tsx",
+  "/disk/frontend/src/components/CodeView.tsx",
+  "/disk/frontend/src/components/ErrorPanel.tsx",
+  "/disk/frontend/src/components/FileTree.tsx",
+  "/disk/frontend/src/components/PreviewPanel.tsx",
+  "/disk/frontend/src/components/TaskBoard.tsx",
+  "/disk/frontend/src/constants/default-theme.ts",
+  "/disk/frontend/src/dev-components/Beacon.tsx",
+  "/disk/frontend/src/dev-components/DevErrorPage.tsx",
+  "/disk/frontend/src/dev-components/InternalErrorBoundary.tsx",
+  "/disk/frontend/src/dev-components/UserErrorBoundary.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/accordion.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/alert-dialog.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/alert.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/aspect-ratio.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/avatar.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/badge.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/breadcrumb.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/button.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/calendar.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/card.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/carousel.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/chart.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/checkbox.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/collapsible.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/command.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/context-menu.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/dialog.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/drawer.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/dropdown-menu.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/form.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/hover-card.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/input-otp.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/input.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/label.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/menubar.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/navigation-menu.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/pagination.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/popover.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/progress.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/radio-group.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/resizable.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/scroll-area.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/select.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/separator.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/sheet.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/skeleton.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/slider.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/sonner.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/switch.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/table.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/tabs.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/textarea.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/toast.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/toaster.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/toggle-group.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/toggle.tsx",
+  "/disk/frontend/src/extensions/shadcn/components/tooltip.tsx",
+  "/disk/frontend/src/extensions/shadcn/hooks/use-theme.ts",
+  "/disk/frontend/src/extensions/shadcn/hooks/use-toast.ts",
+  "/disk/frontend/src/internal-components/DevTools.tsx",
+  "/disk/frontend/src/internal-components/Head.tsx",
+  "/disk/frontend/src/internal-components/ThemeProvider.tsx",
+  "/disk/frontend/src/internal-hooks/useBeacon.ts",
+  "/disk/frontend/src/internal-hooks/useHMR.ts",
+  "/disk/frontend/src/internal-hooks/usePageChangeListener.ts",
+  "/disk/frontend/src/internal-utils/app-utils.ts",
+  "/disk/frontend/src/internal-utils/cloning-utils.ts",
+  "/disk/frontend/src/internal-utils/iframe-utils.ts",
+  "/disk/frontend/src/layout/Cell.tsx",
+  "/disk/frontend/src/layout/Grid.tsx",
+  "/disk/frontend/src/lib/utils.ts",
+  "/disk/frontend/src/pages/AIChatWorkspace.tsx",
+  "/disk/frontend/src/pages/App.tsx",
+  "/disk/frontend/src/pages/NotFoundPage.tsx",
+  "/disk/frontend/src/pages/Projects.tsx",
+  "/disk/frontend/src/pages/SomethingWentWrongPage.tsx",
+  "/disk/frontend/src/pages/TestAgentTools.tsx",
+  "/disk/frontend/src/pages/TestPreviewBuild.tsx",
+  "/disk/frontend/src/pages/brain.ts",
+  "/disk/frontend/src/polyfills/react-polyfill.ts",
+  "/disk/frontend/src/prod-components/OuterErrorBoundary.tsx",
+  "/disk/frontend/src/prod-components/ProdErrorPage.tsx",
+  "/disk/frontend/src/prod-components/SuspenseWrapper.tsx",
+  "/disk/frontend/src/utils/cn.ts",
+  "/disk/frontend/src/utils/workspaceStore.ts"
+ ],
+ "options": {
+  "target": 99,
+  "useDefineForClassFields": true,
+  "lib": [
+   "lib.dom.d.ts",
+   "lib.dom.iterable.d.ts",
+   "lib.esnext.d.ts"
+  ],
+  "allowJs": true,
+  "skipLibCheck": true,
+  "esModuleInterop": false,
+  "allowSyntheticDefaultImports": true,
+  "allowImportingTsExtensions": true,
+  "strict": false,
+  "forceConsistentCasingInFileNames": true,
+  "module": 99,
+  "moduleResolution": 2,
+  "resolveJsonModule": true,
+  "isolatedModules": false,
+  "noEmit": true,
+  "jsx": 4,
+  "baseUrl": "/disk/frontend",
+  "paths": {
+   "brain": [
+    "./src/brain"
+   ],
+   "types": [
+    "./src/apiclient/data-contracts.ts"
+   ],
+   "components/*": [
+    "./src/components/*"
+   ],
+   "pages/*": [
+    "./src/pages/*"
+   ],
+   "app": [
+    "./src/app"
+   ],
+   "app/auth": [
+    "./src/app/auth"
+   ],
+   "utils/*": [
+    "./src/utils/*"
+   ],
+   "@/*": [
+    "./src/*"
+   ],
+   "@/hooks/*": [
+    "./src/extensions/shadcn/hooks/*"
+   ],
+   "@/components/hooks/*": [
+    "./src/extensions/shadcn/hooks/*"
+   ],
+   "@/components/ui/*": [
+    "./src/extensions/shadcn/components/*"
+   ]
+  },
+  "pathsBasePath": "/disk/frontend",
+  "configFilePath": "/disk/frontend/tsconfig.json"
+ },
+ "projectReferences": [
+  {
+   "path": "/disk/frontend/tsconfig.node.json",
+   "originalPath": "./tsconfig.node.json"
+  }
+ ]
+}
+Info 22   [19:33:52.853] DirectoryWatcher:: Added:: WatchInfo: /disk/frontend/src 1 undefined Config: /disk/frontend/tsconfig.json WatchType: Wild card directory
+Info 23   [19:33:52.860] Elapsed:: 6.600168999284506ms DirectoryWatcher:: Added:: WatchInfo: /disk/frontend/src 1 undefined Config: /disk/frontend/tsconfig.json WatchType: Wild card directory
+Info 24   [19:33:52.861] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/AppWrapper.tsx 500 undefined WatchType: Closed Script info
+Info 25   [19:33:52.861] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/constants.ts 500 undefined WatchType: Closed Script info
+Info 26   [19:33:52.861] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/main.tsx 500 undefined WatchType: Closed Script info
+Info 27   [19:33:52.861] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/router.tsx 500 undefined WatchType: Closed Script info
+Info 28   [19:33:52.861] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/user-routes.tsx 500 undefined WatchType: Closed Script info
+Info 29   [19:33:52.862] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/vite-env.d.ts 500 undefined WatchType: Closed Script info
+Info 30   [19:33:52.862] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/apiclient/index.ts 500 undefined WatchType: Closed Script info
+Info 31   [19:33:52.862] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/index.ts 500 undefined WatchType: Closed Script info
+Info 32   [19:33:52.862] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/auth/LoginRedirect.tsx 500 undefined WatchType: Closed Script info
+Info 33   [19:33:52.862] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/auth/StackHandlerRoutes.tsx 500 undefined WatchType: Closed Script info
+Info 34   [19:33:52.862] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/auth/UserGuard.tsx 500 undefined WatchType: Closed Script info
+Info 35   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/auth/auth.ts 500 undefined WatchType: Closed Script info
+Info 36   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/auth/config.ts 500 undefined WatchType: Closed Script info
+Info 37   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/auth/index.ts 500 undefined WatchType: Closed Script info
+Info 38   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/auth/stack.ts 500 undefined WatchType: Closed Script info
+Info 39   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/app/auth/utils.ts 500 undefined WatchType: Closed Script info
+Info 40   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/brain/index.ts 500 undefined WatchType: Closed Script info
+Info 41   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/AppProvider.tsx 500 undefined WatchType: Closed Script info
+Info 42   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/ChatHistory.tsx 500 undefined WatchType: Closed Script info
+Info 43   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/ChatInput.tsx 500 undefined WatchType: Closed Script info
+Info 44   [19:33:52.863] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/ChatMessage.tsx 500 undefined WatchType: Closed Script info
+Info 45   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/ChatPanel.tsx 500 undefined WatchType: Closed Script info
+Info 46   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/CodeEditor.tsx 500 undefined WatchType: Closed Script info
+Info 47   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/CodeHighlight.tsx 500 undefined WatchType: Closed Script info
+Info 48   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/CodePreview.tsx 500 undefined WatchType: Closed Script info
+Info 49   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/ErrorPanel.tsx 500 undefined WatchType: Closed Script info
+Info 50   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/FileTree.tsx 500 undefined WatchType: Closed Script info
+Info 51   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/PreviewPanel.tsx 500 undefined WatchType: Closed Script info
+Info 52   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/components/TaskBoard.tsx 500 undefined WatchType: Closed Script info
+Info 53   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/constants/default-theme.ts 500 undefined WatchType: Closed Script info
+Info 54   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/dev-components/Beacon.tsx 500 undefined WatchType: Closed Script info
+Info 55   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/dev-components/DevErrorPage.tsx 500 undefined WatchType: Closed Script info
+Info 56   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/dev-components/InternalErrorBoundary.tsx 500 undefined WatchType: Closed Script info
+Info 57   [19:33:52.864] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/dev-components/UserErrorBoundary.tsx 500 undefined WatchType: Closed Script info
+Info 58   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/accordion.tsx 500 undefined WatchType: Closed Script info
+Info 59   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/alert-dialog.tsx 500 undefined WatchType: Closed Script info
+Info 60   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/alert.tsx 500 undefined WatchType: Closed Script info
+Info 61   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/aspect-ratio.tsx 500 undefined WatchType: Closed Script info
+Info 62   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/avatar.tsx 500 undefined WatchType: Closed Script info
+Info 63   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/badge.tsx 500 undefined WatchType: Closed Script info
+Info 64   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/breadcrumb.tsx 500 undefined WatchType: Closed Script info
+Info 65   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/button.tsx 500 undefined WatchType: Closed Script info
+Info 66   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/calendar.tsx 500 undefined WatchType: Closed Script info
+Info 67   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/card.tsx 500 undefined WatchType: Closed Script info
+Info 68   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/carousel.tsx 500 undefined WatchType: Closed Script info
+Info 69   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/chart.tsx 500 undefined WatchType: Closed Script info
+Info 70   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/checkbox.tsx 500 undefined WatchType: Closed Script info
+Info 71   [19:33:52.865] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/collapsible.tsx 500 undefined WatchType: Closed Script info
+Info 72   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/command.tsx 500 undefined WatchType: Closed Script info
+Info 73   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/context-menu.tsx 500 undefined WatchType: Closed Script info
+Info 74   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/dialog.tsx 500 undefined WatchType: Closed Script info
+Info 75   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/drawer.tsx 500 undefined WatchType: Closed Script info
+Info 76   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/dropdown-menu.tsx 500 undefined WatchType: Closed Script info
+Info 77   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/form.tsx 500 undefined WatchType: Closed Script info
+Info 78   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/hover-card.tsx 500 undefined WatchType: Closed Script info
+Info 79   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/input-otp.tsx 500 undefined WatchType: Closed Script info
+Info 80   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/input.tsx 500 undefined WatchType: Closed Script info
+Info 81   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/label.tsx 500 undefined WatchType: Closed Script info
+Info 82   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/menubar.tsx 500 undefined WatchType: Closed Script info
+Info 83   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/navigation-menu.tsx 500 undefined WatchType: Closed Script info
+Info 84   [19:33:52.866] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/pagination.tsx 500 undefined WatchType: Closed Script info
+Info 85   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/popover.tsx 500 undefined WatchType: Closed Script info
+Info 86   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/progress.tsx 500 undefined WatchType: Closed Script info
+Info 87   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/radio-group.tsx 500 undefined WatchType: Closed Script info
+Info 88   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/resizable.tsx 500 undefined WatchType: Closed Script info
+Info 89   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/scroll-area.tsx 500 undefined WatchType: Closed Script info
+Info 90   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/select.tsx 500 undefined WatchType: Closed Script info
+Info 91   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/separator.tsx 500 undefined WatchType: Closed Script info
+Info 92   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/sheet.tsx 500 undefined WatchType: Closed Script info
+Info 93   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/skeleton.tsx 500 undefined WatchType: Closed Script info
+Info 94   [19:33:52.867] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/slider.tsx 500 undefined WatchType: Closed Script info
+Info 95   [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/sonner.tsx 500 undefined WatchType: Closed Script info
+Info 96   [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/switch.tsx 500 undefined WatchType: Closed Script info
+Info 97   [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/table.tsx 500 undefined WatchType: Closed Script info
+Info 98   [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/tabs.tsx 500 undefined WatchType: Closed Script info
+Info 99   [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/textarea.tsx 500 undefined WatchType: Closed Script info
+Info 100  [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/toast.tsx 500 undefined WatchType: Closed Script info
+Info 101  [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/toaster.tsx 500 undefined WatchType: Closed Script info
+Info 102  [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/toggle-group.tsx 500 undefined WatchType: Closed Script info
+Info 103  [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/toggle.tsx 500 undefined WatchType: Closed Script info
+Info 104  [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/components/tooltip.tsx 500 undefined WatchType: Closed Script info
+Info 105  [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/hooks/use-theme.ts 500 undefined WatchType: Closed Script info
+Info 106  [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/extensions/shadcn/hooks/use-toast.ts 500 undefined WatchType: Closed Script info
+Info 107  [19:33:52.868] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-components/DevTools.tsx 500 undefined WatchType: Closed Script info
+Info 108  [19:33:52.869] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-components/Head.tsx 500 undefined WatchType: Closed Script info
+Info 109  [19:33:52.869] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-components/ThemeProvider.tsx 500 undefined WatchType: Closed Script info
+Info 110  [19:33:52.869] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-hooks/useBeacon.ts 500 undefined WatchType: Closed Script info
+Info 111  [19:33:52.869] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-hooks/useHMR.ts 500 undefined WatchType: Closed Script info
+Info 112  [19:33:52.869] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-hooks/usePageChangeListener.ts 500 undefined WatchType: Closed Script info
+Info 113  [19:33:52.869] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-utils/app-utils.ts 500 undefined WatchType: Closed Script info
+Info 114  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-utils/cloning-utils.ts 500 undefined WatchType: Closed Script info
+Info 115  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/internal-utils/iframe-utils.ts 500 undefined WatchType: Closed Script info
+Info 116  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/layout/Cell.tsx 500 undefined WatchType: Closed Script info
+Info 117  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/layout/Grid.tsx 500 undefined WatchType: Closed Script info
+Info 118  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/lib/utils.ts 500 undefined WatchType: Closed Script info
+Info 119  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/pages/AIChatWorkspace.tsx 500 undefined WatchType: Closed Script info
+Info 120  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/pages/App.tsx 500 undefined WatchType: Closed Script info
+Info 121  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/pages/NotFoundPage.tsx 500 undefined WatchType: Closed Script info
+Info 122  [19:33:52.871] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/pages/Projects.tsx 500 undefined WatchType: Closed Script info
+Info 123  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/pages/SomethingWentWrongPage.tsx 500 undefined WatchType: Closed Script info
+Info 124  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/pages/TestAgentTools.tsx 500 undefined WatchType: Closed Script info
+Info 125  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/pages/TestPreviewBuild.tsx 500 undefined WatchType: Closed Script info
+Info 126  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/pages/brain.ts 500 undefined WatchType: Closed Script info
+Info 127  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/polyfills/react-polyfill.ts 500 undefined WatchType: Closed Script info
+Info 128  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/prod-components/OuterErrorBoundary.tsx 500 undefined WatchType: Closed Script info
+Info 129  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/prod-components/ProdErrorPage.tsx 500 undefined WatchType: Closed Script info
+Info 130  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/prod-components/SuspenseWrapper.tsx 500 undefined WatchType: Closed Script info
+Info 131  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/utils/cn.ts 500 undefined WatchType: Closed Script info
+Info 132  [19:33:52.872] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/utils/workspaceStore.ts 500 undefined WatchType: Closed Script info
+Info 133  [19:33:52.938] Starting updateGraphWorker: Project: /disk/frontend/tsconfig.json
+Info 134  [19:33:52.963] Config: /disk/frontend/tsconfig.node.json : {
+ "rootNames": [
+  "/disk/frontend/vite.config.ts",
+  "/disk/frontend/server/component-tagger-plugin.ts",
+  "/disk/frontend/server/extensions.ts",
+  "/disk/frontend/server/hotreload-tracker.ts",
+  "/disk/frontend/server/logger.ts",
+  "/disk/frontend/server/openapi-spec-handler.ts",
+  "/disk/frontend/server/peek-command.ts",
+  "/disk/frontend/server/peek.ts",
+  "/disk/frontend/server/run-diagnostics.ts",
+  "/disk/frontend/server/try-tsc-handler.ts",
+  "/disk/frontend/server/utils.ts"
+ ],
+ "options": {
+  "composite": true,
+  "target": 99,
+  "strict": true,
+  "module": 99,
+  "allowSyntheticDefaultImports": true,
+  "moduleResolution": 2,
+  "configFilePath": "/disk/frontend/tsconfig.node.json"
+ }
+}
+Info 135  [19:33:52.963] FileWatcher:: Added:: WatchInfo: /disk/frontend/tsconfig.node.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: Config file
+Info 136  [19:33:52.963] DirectoryWatcher:: Added:: WatchInfo: /disk/frontend/server 1 undefined Config: /disk/frontend/tsconfig.node.json WatchType: Wild card directory
+Info 137  [19:33:52.963] Elapsed:: 0.11692000180482864ms DirectoryWatcher:: Added:: WatchInfo: /disk/frontend/server 1 undefined Config: /disk/frontend/tsconfig.node.json WatchType: Wild card directory
+Info 138  [19:33:53.017] DirectoryWatcher:: Added:: WatchInfo: /disk/frontend/src 1 undefined Project: /disk/frontend/tsconfig.json WatchType: Failed Lookup Locations
+Info 139  [19:33:53.017] Elapsed:: 0.01657100021839142ms DirectoryWatcher:: Added:: WatchInfo: /disk/frontend/src 1 undefined Project: /disk/frontend/tsconfig.json WatchType: Failed Lookup Locations
+Info 140  [19:33:53.029] DirectoryWatcher:: Added:: WatchInfo: /disk/frontend/node_modules 1 undefined WatchType: node_modules for closed script infos and package.jsons affecting module specifier cache
+Info 141  [19:33:54.068] Elapsed:: 1039.5852329991758ms DirectoryWatcher:: Added:: WatchInfo: /disk/frontend/node_modules 1 undefined WatchType: node_modules for closed script infos and package.jsons affecting module specifier cache
+Info 142  [19:33:54.073] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@types/react/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 143  [19:33:54.476] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/react-router-dom/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 144  [19:33:54.482] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/react-router/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 145  [19:33:54.487] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@remix-run/router/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 146  [19:33:54.576] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/fonts.json 500 undefined WatchType: Closed Script info
+Info 147  [19:33:54.592] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/react-error-boundary/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 148  [19:33:54.609] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry/react/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 149  [19:33:54.616] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry/browser/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 150  [19:33:54.635] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry/types/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 151  [19:33:54.680] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry/core/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 152  [19:33:54.702] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry/utils/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 153  [19:33:54.769] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry-internal/tracing/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 154  [19:33:54.799] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry/replay/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 155  [19:33:54.808] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry-internal/replay-canvas/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 156  [19:33:54.809] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@sentry-internal/feedback/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 157  [19:33:54.855] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@stackframe/stack-shared/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 158  [19:33:54.914] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/yup/node_modules/type-fest/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 159  [19:33:54.986] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/jose/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 160  [19:33:55.219] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/zod/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 161  [19:33:55.287] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/zustand/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 162  [19:33:55.290] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/apiclient/Apiclient.ts 500 undefined WatchType: Closed Script info
+Info 163  [19:33:55.303] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/apiclient/data-contracts.ts 500 undefined WatchType: Closed Script info
+Info 164  [19:33:55.306] FileWatcher:: Added:: WatchInfo: /disk/frontend/src/apiclient/http-client.ts 500 undefined WatchType: Closed Script info
+Info 165  [19:33:55.313] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/react-markdown/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 166  [19:33:55.328] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/unified/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 167  [19:33:55.329] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/vfile/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 168  [19:33:55.349] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/vfile-message/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 169  [19:33:55.362] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/trough/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 170  [19:33:55.368] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/remark-rehype/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 171  [19:33:55.377] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/mdast-util-to-hast/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 172  [19:33:55.439] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/class-variance-authority/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 173  [19:33:55.451] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@dnd-kit/core/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 174  [19:33:55.454] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@dnd-kit/utilities/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 175  [19:33:55.550] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@radix-ui/react-icons/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 176  [19:33:55.757] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/vite/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 177  [19:33:55.817] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/date-fns/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 178  [19:33:55.903] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/embla-carousel-react/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 179  [19:33:55.904] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/embla-carousel/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 180  [19:33:55.932] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/recharts/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 181  [19:33:56.109] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@types/lodash/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 182  [19:33:56.321] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/react-hook-form/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 183  [19:33:56.362] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/react-resizable-panels/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 184  [19:33:56.373] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/next-themes/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 185  [19:33:56.428] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/react/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 186  [19:33:56.429] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/accordion/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 187  [19:33:56.438] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/system/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 188  [19:33:56.443] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/color-mode/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 189  [19:33:56.450] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/styled-system/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 190  [19:33:56.450] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/breakpoint-utils/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 191  [19:33:56.451] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@emotion/react/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 192  [19:33:56.453] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@emotion/cache/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 193  [19:33:56.454] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@emotion/utils/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 194  [19:33:56.455] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@emotion/sheet/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 195  [19:33:56.456] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@emotion/serialize/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 196  [19:33:56.460] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/utils/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 197  [19:33:56.468] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/react-utils/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 198  [19:33:56.470] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@emotion/styled/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 199  [19:33:56.473] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/descendant/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 200  [19:33:56.480] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/icon/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 201  [19:33:56.483] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/transition/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 202  [19:33:56.518] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/alert/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 203  [19:33:56.520] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/spinner/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 204  [19:33:56.521] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/avatar/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 205  [19:33:56.523] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/breadcrumb/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 206  [19:33:56.525] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/button/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 207  [19:33:56.527] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/card/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 208  [19:33:56.529] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/checkbox/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 209  [19:33:56.532] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/close-button/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 210  [19:33:56.532] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/control-box/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 211  [19:33:56.533] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/counter/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 212  [19:33:56.534] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/css-reset/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 213  [19:33:56.535] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/editable/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 214  [19:33:56.547] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/focus-lock/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 215  [19:33:56.547] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/form-control/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 216  [19:33:56.549] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/hooks/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 217  [19:33:56.555] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/image/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 218  [19:33:56.557] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/input/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 219  [19:33:56.560] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/layout/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 220  [19:33:56.571] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/media-query/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 221  [19:33:56.573] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/menu/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 222  [19:33:56.583] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/popper/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 223  [19:33:56.585] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@popperjs/core/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 224  [19:33:56.604] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/modal/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 225  [19:33:56.607] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/portal/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 226  [19:33:56.610] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/number-input/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 227  [19:33:56.611] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/pin-input/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 228  [19:33:56.612] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/popover/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 229  [19:33:56.616] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/progress/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 230  [19:33:56.619] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/radio/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 231  [19:33:56.621] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/react-env/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 232  [19:33:56.621] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/select/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 233  [19:33:56.622] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/skeleton/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 234  [19:33:56.623] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/skip-nav/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 235  [19:33:56.624] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/slider/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 236  [19:33:56.626] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/stat/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 237  [19:33:56.628] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/stepper/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 238  [19:33:56.639] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/switch/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 239  [19:33:56.640] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/table/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 240  [19:33:56.642] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/tabs/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 241  [19:33:56.646] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/clickable/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 242  [19:33:56.650] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/tag/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 243  [19:33:56.651] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/textarea/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 244  [19:33:56.661] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/theme/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 245  [19:33:56.662] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/theme-tools/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution
+Info 246  [19:33:56.662] FileWatcher:: Added:: WatchInfo: /disk/frontend/node_modules/@chakra-ui/anatomy/package.json 2000 undefined Project: /disk/frontend/tsconfig.json WatchType: File location affecting resolution

@@ -1,0 +1,75 @@
+Info 0    [19:30:49.157] Starting TS Server
+Info 1    [19:30:49.157] Version: 5.2.2
+Info 2    [19:30:49.157] Arguments: /opt/nvm/versions/node/v20.5.1/bin/node /disk/frontend/node_modules/typescript/lib/tsserver.js --serverMode partialSemantic --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --cancellationPipeName /tmp/60002d8a18772d2f27abe7bb6fc95a1e/tscancellation* --logVerbosity verbose --logFile /disk/frontend/.log/tsserver-log-C69uP6/tsserver.log --locale en --validateDefaultNpmLocation --useNodeIpc
+Info 3    [19:30:49.157] Platform: linux NodeVersion: v20.5.1 CaseSensitive: true
+Info 4    [19:30:49.157] ServerMode: 1 hasUnknownServerMode: undefined
+Info 5    [19:30:49.169] request:
+    {
+      "seq": 0,
+      "type": "request",
+      "command": "configure",
+      "arguments": {
+        "hostInfo": "Databutton",
+        "formatOptions": {
+          "newLineCharacter": "\n"
+        },
+        "preferences": {
+          "allowIncompleteCompletions": true,
+          "allowRenameOfImportPath": true,
+          "allowTextChangesInNewFiles": true,
+          "disableLineTextInReferences": true,
+          "disableSuggestions": false,
+          "displayPartsForJSDoc": true,
+          "excludeLibrarySymbolsInNavTo": true,
+          "generateReturnInDocTemplate": true,
+          "importModuleSpecifierEnding": "auto",
+          "importModuleSpecifierPreference": "shortest",
+          "includeAutomaticOptionalChainCompletions": true,
+          "includeCompletionsForImportStatements": true,
+          "includeCompletionsForModuleExports": true,
+          "includeCompletionsWithClassMemberSnippets": true,
+          "includeCompletionsWithInsertText": true,
+          "includeCompletionsWithObjectLiteralMethodSnippets": true,
+          "includeCompletionsWithSnippetText": true,
+          "includeInlayEnumMemberValueHints": false,
+          "includeInlayFunctionLikeReturnTypeHints": false,
+          "includeInlayFunctionParameterTypeHints": false,
+          "includeInlayParameterNameHints": "none",
+          "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+          "includeInlayPropertyDeclarationTypeHints": false,
+          "includeInlayVariableTypeHints": false,
+          "includeInlayVariableTypeHintsWhenTypeMatchesName": false,
+          "includePackageJsonAutoImports": "auto",
+          "interactiveInlayHints": true,
+          "jsxAttributeCompletionStyle": "auto",
+          "lazyConfiguredProjectsFromExternalProject": false,
+          "organizeImportsAccentCollation": true,
+          "organizeImportsCaseFirst": false,
+          "organizeImportsCollation": "ordinal",
+          "organizeImportsCollationLocale": "en",
+          "organizeImportsIgnoreCase": "auto",
+          "organizeImportsNumericCollation": false,
+          "providePrefixAndSuffixTextForRename": true,
+          "provideRefactorNotApplicableReason": true,
+          "quotePreference": "auto"
+        }
+      }
+    }
+Info 6    [19:30:49.170] Host information Databutton
+Info 7    [19:30:49.170] Format host information updated
+Info 8    [19:30:49.170] response:
+    {"seq":0,"type":"response","command":"configure","request_seq":0,"success":true}
+Perf 9    [19:30:49.176] 0::configure: async elapsed time (in milliseconds) 6.2149
+Info 10   [19:30:49.176] request:
+    {
+      "seq": 1,
+      "type": "request",
+      "command": "open",
+      "arguments": {
+        "file": "/disk/frontend/src/components/CodePreview.tsx",
+        "fileContent": "import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';\nimport { Badge } from '@/components/ui/badge';\nimport { FileCode } from 'lucide-react';\nimport { CodeHighlight } from 'components/CodeHighlight';\nimport type { ProjectFile } from 'utils/workspaceStore';\n\ninterface Props {\n  file: ProjectFile | null;\n}\n\n/**\n * Get language for syntax highlighting based on file extension\n */\nconst getLanguageFromPath = (path: string): string => {\n  const ext = path.split('.').pop()?.toLowerCase();\n  const languageMap: Record<string, string> = {\n    ts: 'typescript',\n    tsx: 'typescript',\n    js: 'javascript',\n    jsx: 'javascript',\n    py: 'python',\n    json: 'json',\n    css: 'css',\n    scss: 'scss',\n    html: 'html',\n    md: 'markdown',\n    yaml: 'yaml',\n    yml: 'yaml',\n    sql: 'sql',\n    sh: 'bash',\n  };\n  return languageMap[ext || ''] || 'text';\n};\n\n/**\n * Code preview component\n * Displays file content with syntax highlighting\n */\nexport const CodePreview = ({ file }: Props) => {\n  if (!file) {\n    return (\n      <Card className=\"h-full border-border flex items-center justify-center\">\n        <CardContent className=\"text-center py-8\">\n          <FileCode className=\"h-12 w-12 text-muted-foreground mx-auto mb-4\" />\n          <p className=\"text-sm text-muted-foreground\">\n            Select a file to view its contents\n          </p>\n        </CardContent>\n      </Card>\n    );\n  }\n\n  const language = getLanguageFromPath(file.file_path);\n  const lineCount = file.file_content.split('\\n').length;\n\n  return (\n    <Card className=\"h-full border-border flex flex-col\">\n      <CardHeader className=\"pb-3 border-b border-border\">\n        <div className=\"flex items-center justify-between\">\n          <CardTitle className=\"text-base font-mono\">{file.file_path}</CardTitle>\n          <div className=\"flex items-center gap-2\">\n            <Badge variant=\"outline\" className=\"text-xs\">\n              {language}\n            </Badge>\n            <Badge variant=\"outline\" className=\"text-xs\">\n              v{file.version}\n            </Badge>\n            <Badge variant=\"outline\" className=\"text-xs\">\n              {lineCount} lines\n            </Badge>\n          </div>\n        </div>\n      </CardHeader>\n      <CardContent className=\"flex-1 p-0 overflow-auto\">\n        <div className=\"text-sm\">\n          <CodeHighlight\n            code={file.file_content}\n            language={language}\n            showLineNumbers\n            className=\"m-0 rounded-none\"\n          />\n        </div>\n      </CardContent>\n    </Card>\n  );\n};\n",
+        "scriptKindName": "TSX",
+        "projectRootPath": "/disk/frontend"
+      }
+    }
+Info 11   [19:30:49.183] Starting updateGraphWorker: Project: /dev/null/inferredProject1*

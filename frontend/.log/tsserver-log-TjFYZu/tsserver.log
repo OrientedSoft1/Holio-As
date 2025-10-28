@@ -1,0 +1,75 @@
+Info 0    [19:30:51.657] Starting TS Server
+Info 1    [19:30:51.658] Version: 5.2.2
+Info 2    [19:30:51.658] Arguments: /opt/nvm/versions/node/v20.5.1/bin/node /disk/frontend/node_modules/typescript/lib/tsserver.js --serverMode partialSemantic --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --cancellationPipeName /tmp/b55f8576984ee0283e6cf02c2dd39a69/tscancellation* --logVerbosity verbose --logFile /disk/frontend/.log/tsserver-log-TjFYZu/tsserver.log --locale en --validateDefaultNpmLocation --useNodeIpc
+Info 3    [19:30:51.658] Platform: linux NodeVersion: v20.5.1 CaseSensitive: true
+Info 4    [19:30:51.658] ServerMode: 1 hasUnknownServerMode: undefined
+Info 5    [19:30:51.665] request:
+    {
+      "seq": 0,
+      "type": "request",
+      "command": "configure",
+      "arguments": {
+        "hostInfo": "Databutton",
+        "formatOptions": {
+          "newLineCharacter": "\n"
+        },
+        "preferences": {
+          "allowIncompleteCompletions": true,
+          "allowRenameOfImportPath": true,
+          "allowTextChangesInNewFiles": true,
+          "disableLineTextInReferences": true,
+          "disableSuggestions": false,
+          "displayPartsForJSDoc": true,
+          "excludeLibrarySymbolsInNavTo": true,
+          "generateReturnInDocTemplate": true,
+          "importModuleSpecifierEnding": "auto",
+          "importModuleSpecifierPreference": "shortest",
+          "includeAutomaticOptionalChainCompletions": true,
+          "includeCompletionsForImportStatements": true,
+          "includeCompletionsForModuleExports": true,
+          "includeCompletionsWithClassMemberSnippets": true,
+          "includeCompletionsWithInsertText": true,
+          "includeCompletionsWithObjectLiteralMethodSnippets": true,
+          "includeCompletionsWithSnippetText": true,
+          "includeInlayEnumMemberValueHints": false,
+          "includeInlayFunctionLikeReturnTypeHints": false,
+          "includeInlayFunctionParameterTypeHints": false,
+          "includeInlayParameterNameHints": "none",
+          "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+          "includeInlayPropertyDeclarationTypeHints": false,
+          "includeInlayVariableTypeHints": false,
+          "includeInlayVariableTypeHintsWhenTypeMatchesName": false,
+          "includePackageJsonAutoImports": "auto",
+          "interactiveInlayHints": true,
+          "jsxAttributeCompletionStyle": "auto",
+          "lazyConfiguredProjectsFromExternalProject": false,
+          "organizeImportsAccentCollation": true,
+          "organizeImportsCaseFirst": false,
+          "organizeImportsCollation": "ordinal",
+          "organizeImportsCollationLocale": "en",
+          "organizeImportsIgnoreCase": "auto",
+          "organizeImportsNumericCollation": false,
+          "providePrefixAndSuffixTextForRename": true,
+          "provideRefactorNotApplicableReason": true,
+          "quotePreference": "auto"
+        }
+      }
+    }
+Info 6    [19:30:51.665] Host information Databutton
+Info 7    [19:30:51.665] Format host information updated
+Info 8    [19:30:51.665] response:
+    {"seq":0,"type":"response","command":"configure","request_seq":0,"success":true}
+Perf 9    [19:30:51.666] 0::configure: async elapsed time (in milliseconds) 1.5245
+Info 10   [19:30:51.666] request:
+    {
+      "seq": 1,
+      "type": "request",
+      "command": "open",
+      "arguments": {
+        "file": "/disk/frontend/src/components/CodeHighlight.tsx",
+        "fileContent": "import { useEffect, useRef } from 'react';\nimport Prism from 'prismjs';\n\n// Import core Prism CSS\nimport 'prismjs/themes/prism-tomorrow.css';\n\n// Import common languages\nimport 'prismjs/components/prism-typescript';\nimport 'prismjs/components/prism-javascript';\nimport 'prismjs/components/prism-jsx';\nimport 'prismjs/components/prism-tsx';\nimport 'prismjs/components/prism-python';\nimport 'prismjs/components/prism-json';\nimport 'prismjs/components/prism-css';\nimport 'prismjs/components/prism-scss';\nimport 'prismjs/components/prism-markdown';\nimport 'prismjs/components/prism-yaml';\nimport 'prismjs/components/prism-sql';\nimport 'prismjs/components/prism-bash';\n\ninterface Props {\n  code: string;\n  language: string;\n  showLineNumbers?: boolean;\n  className?: string;\n}\n\n/**\n * Syntax highlighting component using Prism.js\n * Vite-compatible and lightweight\n */\nexport const CodeHighlight = ({ code, language, showLineNumbers = false, className = '' }: Props) => {\n  const codeRef = useRef<HTMLElement>(null);\n\n  useEffect(() => {\n    if (codeRef.current) {\n      Prism.highlightElement(codeRef.current);\n    }\n  }, [code, language]);\n\n  const languageClass = `language-${language}`;\n\n  return (\n    <pre className={`${showLineNumbers ? 'line-numbers' : ''} ${className}`}>\n      <code ref={codeRef} className={languageClass}>\n        {code}\n      </code>\n    </pre>\n  );\n};\n",
+        "scriptKindName": "TSX",
+        "projectRootPath": "/disk/frontend"
+      }
+    }
+Info 11   [19:30:51.670] Starting updateGraphWorker: Project: /dev/null/inferredProject1*
