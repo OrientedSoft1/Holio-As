@@ -1,0 +1,4 @@
+[tool.poetry]
+name = "riff-backend"
+version = "1.0.0"
+description = "Riff AI Studio Backend"
